@@ -19,6 +19,7 @@ package at.ac.ait.ubicity.fileloader;
     along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
  */
 import com.lmax.disruptor.EventFactory;
+import java.lang.ref.WeakReference;
 
 
 /**
@@ -28,16 +29,16 @@ import com.lmax.disruptor.EventFactory;
 public final class SingleLogLineAsString {
     
     
-    String value;
+    WeakReference<String> value;
     
     
     public final String getValue()  {
-        return value;
+        return value.get();
     }
     
     
     public final void setValue( String _val )   {
-        value = _val;
+        value = new WeakReference( _val );
     }
     
     

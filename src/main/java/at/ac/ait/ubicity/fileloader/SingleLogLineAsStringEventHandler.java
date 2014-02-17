@@ -27,6 +27,7 @@ import com.lmax.disruptor.EventHandler;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.MutationBatch;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
+import java.lang.ref.WeakReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,21 +68,21 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
      * as well use a lambda expression, which saves us some maintenance pain. 
      */
     final static LogLineTokenizer _tokenizer = ( _event ) -> {
-        final List< String > _list = new ArrayList();
+        final List< WeakReference< String > > _list = new ArrayList();
         int pos = 0, end;
-        while( ( end = _event.value.indexOf( _SEPARATION_TOKEN, pos ) ) >= 0 ) {
-            final String __t = ( _event.value.substring( pos, end ) );
+        while( ( end = _event.value.get().indexOf( _SEPARATION_TOKEN, pos ) ) >= 0 ) {
+            final String __t = ( _event.value.get().substring( pos, end ) );
             if( ! __t.startsWith( _SEPARATION_TOKEN, 0 ) ) {
-                _list.add( __t );
+                _list.add( new WeakReference( __t ) );
             }
             pos = end + 1;
         }            
         //the block above is incapable of detecting the last token, so let's do this here,
         //as modifying it would be kludgier than this one-liner:
-        _list.add( _event.value.substring( pos, _event.value.length() ) );
+        _list.add( new WeakReference( _event.value.get().substring( pos, _event.value.get().length() ) ) );
         
         //moreover, we have a requirement to ingest the entire log line, too: 
-        _list.add( _event.value );
+        _list.add( new WeakReference( _event.value.get() ) );
         return _list;
     };        
     
@@ -100,14 +101,14 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
          * 
          */
         
-        final List< String > __tokens = _tokenizer.process( event );
+        final List< WeakReference< String > > __tokens = _tokenizer.process( event );
         final int __n = __tokens.size();
         
         LogLineColumn _col = LogLineColumn.ID; 
         
 
          for ( int i = 0; i < __n; i++ )   {
-            String __tok = __tokens.get( i );
+            String __tok = __tokens.get( i ).get();
             if (  ( _col = _col.next() ) != LogLineColumn.NONE )  {
                 batch.withRow( CF_LOGLINES, sequence ).putColumn( _col.name, __tok );
             }
