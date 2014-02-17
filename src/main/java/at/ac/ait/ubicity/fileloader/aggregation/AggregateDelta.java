@@ -13,7 +13,12 @@ import java.util.concurrent.atomic.AtomicLong;
 public final class AggregateDelta {
 
     
-    static EventFactory EVENT_FACTORY = () -> new AggregateDelta();
+    static EventFactory EVENT_FACTORY = new EventFactory() {
+
+        public Object newInstance() {
+            return new AggregateDelta();
+        }
+    };
     
     
     public WeakReference< AtomicLong > delta;

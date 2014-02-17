@@ -46,7 +46,12 @@ public final class SingleLogLineAsString {
     /**
      * Nifty: Java 8 allows for lambda expressions. Let's use them. 
      */
- public final static EventFactory< SingleLogLineAsString > EVENT_FACTORY = () -> new SingleLogLineAsString();    
+ public final static EventFactory< SingleLogLineAsString > EVENT_FACTORY = new EventFactory<SingleLogLineAsString>() {
+
+        public SingleLogLineAsString newInstance() {
+            return new SingleLogLineAsString();
+        }
+    };    
 
    
 }

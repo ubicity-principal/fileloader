@@ -67,23 +67,21 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
      * other purpose than for having its implementation handy here; hence, we might
      * as well use a lambda expression, which saves us some maintenance pain. 
      */
-    final static LogLineTokenizer _tokenizer = ( _event ) -> {
-        final List< WeakReference< String > > _list = new ArrayList();
-        int pos = 0, end;
-        while( ( end = _event.value.get().indexOf( _SEPARATION_TOKEN, pos ) ) >= 0 ) {
-            final String __t = ( _event.value.get().substring( pos, end ) );
-            if( ! __t.startsWith( _SEPARATION_TOKEN, 0 ) ) {
-                _list.add( new WeakReference( __t ) );
-            }
-            pos = end + 1;
-        }            
-        //the block above is incapable of detecting the last token, so let's do this here,
-        //as modifying it would be kludgier than this one-liner:
-        _list.add( new WeakReference( _event.value.get().substring( pos, _event.value.get().length() ) ) );
-        
-        //moreover, we have a requirement to ingest the entire log line, too: 
+    final static LogLineTokenizer _tokenizer = new LogLineTokenizer() {
+
+        public List<WeakReference<String>> process(SingleLogLineAsString _event) {
+            final List< WeakReference< String > > _list = new ArrayList();
+            int pos = 0, end;
+            while( ( end = _event.value.get().indexOf( _SEPARATION_TOKEN, pos ) ) >= 0 ) {
+                final String __t = ( _event.value.get().substring( pos, end ) );
+                if( ! __t.startsWith( _SEPARATION_TOKEN, 0 ) ) {
+                    _list.add( new WeakReference( __t ) );
+                }
+                pos = end + 1;
+            }   _list.add( new WeakReference( _event.value.get().substring( pos, _event.value.get().length() ) ) );
         _list.add( new WeakReference( _event.value.get() ) );
-        return _list;
+            return _list;
+        }
     };        
     
     
