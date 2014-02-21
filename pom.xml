@@ -16,8 +16,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
       <plugin>
@@ -33,7 +33,9 @@
         </executions>
         <configuration>
           <mainClass>at.ac.ait.ubicity.fileloader.FileLoader</mainClass>
-          <commandlineArgs>/data/bl/ logkeyspace2 localhost 10000 1 minute</commandlineArgs>
+            <!--mainClass>at.ac.ait.ubicity.fileloader.util.CheckDB</mainClass-->
+            <!--mainClass>at.ac.ait.ubicity.fileloader.util.CleanUp</mainClass-->
+          <commandlineArgs>/data/bl/ CF_LOGLINES localhost 5000 20 second</commandlineArgs>
           <systemProperties>
             <systemProperty>
               <key>-Xms</key>
