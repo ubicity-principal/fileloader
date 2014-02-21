@@ -1,21 +1,6 @@
 
 
 package at.ac.ait.ubicity.fileloader.util;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
     Copyright (C) 2013  AIT / Austrian Institute of Technology
     http://www.ait.ac.at
@@ -33,9 +18,24 @@ import java.util.logging.Logger;
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
  */
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+
 
 /**
- *
+ * Default implementation of the FileCache interface. 
  * @author jan van oort
  */
 public final class LogFileCache implements FileCache, Serializable    {
@@ -121,6 +121,9 @@ public final class LogFileCache implements FileCache, Serializable    {
     * 
     * @return this FileCache; if enabled, its cache map will have been filled; 
     * an empty cache map is carried otherwise.
+    * 
+    * We always return a FileCache, in a best effort to provide the caller with this utility. 
+    * The caller is supposed to know how, whether or not to use this class.
     */
     @Override
     public FileCache loadCache() {

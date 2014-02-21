@@ -2,7 +2,7 @@
 package at.ac.ait.ubicity.fileloader.util;
 
 import at.ac.ait.ubicity.fileloader.cassandra.AstyanaxInitializer;
-import com.google.common.collect.ImmutableMap;
+
 import com.netflix.astyanax.ExceptionCallback;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.connectionpool.exceptions.BadRequestException;
@@ -11,18 +11,16 @@ import com.netflix.astyanax.model.Column;
 import com.netflix.astyanax.model.ColumnFamily;
 import com.netflix.astyanax.model.Row;
 import com.netflix.astyanax.model.Rows;
-import com.netflix.astyanax.serializers.LongSerializer;
-import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.util.RangeBuilder;
-import java.util.Collection;
+
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.cassandra.db.ColumnSerializer;
+
 
 /**
  *
- * @author jan
+ * @author jan  van oort
  */
 public final class CheckDB {
     

@@ -19,7 +19,7 @@ package at.ac.ait.ubicity.fileloader;
     along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
  */
 import com.lmax.disruptor.EventFactory;
-import java.lang.ref.WeakReference;
+
 
 
 /**

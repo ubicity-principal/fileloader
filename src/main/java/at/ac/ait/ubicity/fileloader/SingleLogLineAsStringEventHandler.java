@@ -18,7 +18,7 @@ package at.ac.ait.ubicity.fileloader;
     along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
  */
 
-import static at.ac.ait.ubicity.fileloader.LogLineTokenizer._SEPARATION_TOKEN;
+
 import static at.ac.ait.ubicity.fileloader.cassandra.AstyanaxInitializer.CF_LOGLINES;
 import at.ac.ait.ubicity.fileloader.cassandra.LogLineColumn;
 
@@ -27,14 +27,13 @@ import com.lmax.disruptor.EventHandler;
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.MutationBatch;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
-import java.lang.ref.WeakReference;
-import java.text.BreakIterator;
+import com.netflix.astyanax.connectionpool.exceptions.OperationTimeoutException;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 
 
 /**
@@ -55,6 +54,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
     
     static MutationBatch batch;
     
+    static long _waitOnTimeOut = 500;
 
     /**
      * No-arg constructor, necessary by contract with LMAX Disruptor 
@@ -86,7 +86,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
          * 
          */
         
-
+        
         String[] __tokens = new String[ 13 ];
         int _counter = 0;
         StringTokenizer _stokenizer = new StringTokenizer( event.value, " " );
@@ -109,6 +109,19 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
             if( sequence % batchSize == 0 ) {
                 batch.executeAsync().get();
                 System.out.print( sequence + " " );
+            }
+        }
+        catch( ExecutionException | OperationTimeoutException  opTimedOut )  {
+            try {
+                logger.warning( "backing off for " + _waitOnTimeOut + " millis before retrying" );
+                Thread.sleep( _waitOnTimeOut );
+                //exponential back-off
+                _waitOnTimeOut = 2 * _waitOnTimeOut;
+                //try again
+                onEvent( event, sequence, endOfBatch );
+            }
+            catch( InterruptedException interrupt ) {
+                Thread.interrupted();
             }
         }
         catch( ConnectionException e )  {

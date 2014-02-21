@@ -1,7 +1,7 @@
 
 package at.ac.ait.ubicity.fileloader.cassandra;
 
-import static at.ac.ait.ubicity.fileloader.cassandra.AstyanaxInitializer.CF_LOGLINES;
+
 import static at.ac.ait.ubicity.fileloader.cassandra.AstyanaxInitializer.logger;
 import com.google.common.collect.ImmutableMap;
 import com.netflix.astyanax.Keyspace;

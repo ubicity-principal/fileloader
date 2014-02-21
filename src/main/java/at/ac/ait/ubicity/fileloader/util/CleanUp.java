@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author jan
+ * @author jan  van oort
  */
 public class CleanUp {
    

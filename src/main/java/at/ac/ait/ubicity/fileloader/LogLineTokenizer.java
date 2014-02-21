@@ -19,8 +19,6 @@ package at.ac.ait.ubicity.fileloader;
     You should have received a copy of the GNU Affero General Public License
     along with this program.  If not, see http://www.gnu.org/licenses/agpl-3.0.html
  */
-import java.lang.ref.WeakReference;
-import java.util.List;
 
 
 
@@ -36,6 +34,12 @@ public interface LogLineTokenizer {
     
     public final static char SEPARATION_CHAR = ' ';
     
+    /**
+     * Currently not implemented.
+     * 
+     * @param _line
+     * @return 
+     */
     public  String[] process( String _line );
     
 }

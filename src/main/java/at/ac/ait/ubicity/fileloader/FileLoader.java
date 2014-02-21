@@ -65,13 +65,24 @@ public final class FileLoader {
 
     static boolean useCache = true;
     
-    //delay, in milliseconds, for which to check our invigilance directory or file for new updates
+    //default delay, in milliseconds, for which to check our invigilance directory or file for new updates
     static final long INVIGILANCE_WAITING_DELAY = 5000;
     
     static  {
         logger.setLevel( Level.ALL );
     }
     
+    
+    
+    
+    /**
+     * 
+     * @param _fileInfo A FileInformation object representing usage information on the file we are supposed to load: line count already ingested, last usage time...
+     * @param _keySpace Cassandra key space into which to ingest
+     * @param _host Cassandra host / server
+     * @param _batchSize MutationBatch size
+     * @throws Exception Shouldn't happen, although the Disruptor may throw an Exception under duress
+     */
     @SuppressWarnings("unchecked")
     public final static void load( final FileInformation _fileInfo, final String _keySpace, final String _host, final int _batchSize ) throws Exception {
 
@@ -93,8 +104,11 @@ public final class FileLoader {
         SingleLogLineAsStringEventHandler.keySpace = keySpace;
         SingleLogLineAsStringEventHandler.batchSize = _batchSize;
         
+        //The EventHandler contains the actual logic for ingesting
         final EventHandler< SingleLogLineAsString > handler = new SingleLogLineAsStringEventHandler(  );
         disruptor.handleEventsWith( handler );
+        
+        //we are almost ready to start
         final RingBuffer< SingleLogLineAsString > rb = disruptor.start();
         
         int _lineCount = 0;
@@ -102,13 +116,14 @@ public final class FileLoader {
         _start = System.nanoTime();
 
         int _linesAlreadyProcessed = _fileInfo.getLineCount();
+        
         //cycle through the lines already processed
         while( _lineCount < _linesAlreadyProcessed ) {
             onLines.nextLine();
             _lineCount++;
         }
         
-        //now get down to the work we actually must do
+        //now get down to the work we actually must do, and fill the ring buffer
         logger.info( "begin proccessing of file " + _fileInfo.getURI() + " @line #" + _lineCount );
         while( onLines.hasNext() ){
 
@@ -120,6 +135,8 @@ public final class FileLoader {
         }
         _lapse = System.nanoTime() - _start;
         logger.info( "ended proccessing of file " + _fileInfo.getURI() + " @line #" + _lineCount );
+        
+        //stop, waiting for last threads still busy to finish their work
         disruptor.shutdown();
 
 
@@ -128,6 +145,9 @@ public final class FileLoader {
         _fileInfo.setLastAccess( System.currentTimeMillis() );
         int _usageCount = _fileInfo.getUsageCount();
         _fileInfo.setUsageCount( _usageCount++ );
+        
+        //make sure we release resources
+        onLines.close();
         
         logger.info( "handled " + ( _lineCount - _linesAlreadyProcessed )  + " log lines in " + _lapse + " nanoseconds" );
         
@@ -140,7 +160,19 @@ public final class FileLoader {
     }
     
     
-    public final static void invigilate( URI _uri, String keySpace, String host, int batchSize )  throws FileNotFoundException, Exception {
+    
+    /**
+     * 
+     * @param _uri the uri we must "patrol"
+     * @param keySpace the Cassandra keyspace to use
+     * @param host the Cassandra host / node
+     * @param batchSize MutationBatch size for ingests
+     * @param millisToWait the number of milliseconds we are supposed to wait before visiting the uri again
+     * @throws FileNotFoundException if there is a problem with the given uri
+     * @throws Exception if actually loading ( ingesting ) from some file under the uri leads to a problem
+     * 
+     */
+    public final static void invigilate( URI _uri, String keySpace, String host, int batchSize, long millisToWait )  throws FileNotFoundException, Exception {
         logger.info( "[FILELOADER] invigilating URI: " + _uri );
         if( _uri.getScheme().equals( "file" ) ) {
             //we don't know yet if the URI is a directory or a file
@@ -149,7 +181,7 @@ public final class FileLoader {
             FileCache cache = useCache ? LogFileCache.get().loadCache() : null;
             
             for( File file: _files ) {
-                logger.info( "[FILELOADER] found file under / at URI: " + file.getName() );                    
+                logger.info( "[FILELOADER] found file under " + _uri.toString() + " : " + file.getName() );                    
                 doLoad( file, cache, keySpace, host, batchSize );
             }
             return;
@@ -159,7 +191,16 @@ public final class FileLoader {
     
     
     
-    
+    /**
+     * Perform a load, and either write to cache or not, according to settings.
+     * 
+     * @param _f The file we must ingest
+     * @param _cache The cache we are to use for keeping file usage information up to date
+     * @param _keySpace Cassandra key space into which to ingest
+     * @param _host Cassandra host / server
+     * @param _batchSize MutationBatch size
+     * @throws Exception  if actual loading of the file causes a problem
+     */
     private final static void doLoad( File _f, FileCache _cache, String _keySpace, String _host, int _batchSize ) throws Exception  {
         if( ! ( _cache == null) )   {
             FileInformation _fileInfo = _cache.getFileInformationFor( _f.toURI() );
@@ -197,7 +238,7 @@ public final class FileLoader {
      * This method is here for demo purposes only. It is not part of the required functionality for this class. 
      * 
      * 
-     * @param args arg 0 = file, arg #1 = keyspace, arg #2 = server host name, arg #3 = batch size
+     * @param args arg 0 = file, arg #1 = keyspace, arg #2 = server host name, arg #3 = batch size, arg #4 = number of time units to wait, arg #5 = time unit ( minute, second, hour,.. ) 
      * ( For now, tacitly assume we are on the default Cassandra 9160 port ). Clustering is not yet supported.
      */
     public final static void main( String[] args ) throws Exception {
@@ -220,7 +261,7 @@ public final class FileLoader {
             useCache = true;
             while( true )   {
                 try {
-                    invigilate( uri, keySpaceName, host, batchSize );
+                    invigilate( uri, keySpaceName, host, batchSize, millisToWait );
                     Thread.sleep( millisToWait );
                 }
                 catch( InterruptedException | Error any  )  {
@@ -232,11 +273,17 @@ public final class FileLoader {
             }
         }
         catch( Exception e )    {
-            e.printStackTrace();
             logger.log(Level.SEVERE, e.toString() );
         }   
     }
 
+    
+    /**
+     * Helper method for converting cmd line, human-readable invigilance delays
+     * 
+     * @param _arg a time unit readable to a human ( minute, second, hour... )
+     * @return a Delay known to the system ( Minute, Hour, ... ) 
+     */
     private static Delay timeUnitsFromCmdLine( String _arg )    {
         Iterator< Delay > onKnownDelayOptions = Delay.knownOptions.iterator();
         while( onKnownDelayOptions.hasNext() )  {
@@ -249,7 +296,7 @@ public final class FileLoader {
     }
     
     private static void usage() {
-    System.out.println( "usage: FileLoader file URL | keyspace | server | batch_size {  number | seconds }" );
-    System.out.println( "example: FileLoader /data/bl/ mykeyspace  localhost 10000 10 minutes" );
+        System.out.println( "usage: FileLoader file URL | keyspace | server | batch_size {  number | seconds }" );
+        System.out.println( "example: FileLoader /data/bl/ mykeyspace  localhost 10000 10 minutes" );
     }
 }

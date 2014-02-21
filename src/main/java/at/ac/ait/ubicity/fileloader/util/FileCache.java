@@ -24,12 +24,14 @@ import java.util.Date;
  */
 
 /**
+ * 
+ * An interface to be implemented by any utility playing the role of a FileCache. 
  *
  * @author jan van oort
  */
 public interface FileCache {
    /**
-     * @param uri
+     * @param uri where is our actual, serialized file living ? 
      */
     FileInformation getFileInformationFor(final URI uri);
 

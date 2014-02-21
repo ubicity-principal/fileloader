@@ -1,14 +1,16 @@
 
 package at.ac.ait.ubicity.fileloader.aggregation;
 
-import at.ac.ait.ubicity.fileloader.FileLoader;
+
 import static at.ac.ait.ubicity.fileloader.FileLoader.TWO;
-import at.ac.ait.ubicity.fileloader.cassandra.AstyanaxInitializer;
+
 import com.lmax.disruptor.EventHandler;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.dsl.Disruptor;
+
 import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.MutationBatch;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -16,7 +18,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author jan
+ * @author jan  van oort
  */
 public final class AggregationJob implements Runnable    {
     

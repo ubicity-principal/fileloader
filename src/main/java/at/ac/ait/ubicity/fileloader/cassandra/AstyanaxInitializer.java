@@ -27,8 +27,6 @@ import com.netflix.astyanax.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.astyanax.connectionpool.impl.CountingConnectionPoolMonitor;
 import com.netflix.astyanax.impl.AstyanaxConfigurationImpl;
 import com.netflix.astyanax.model.ColumnFamily;
-import com.netflix.astyanax.serializers.LongSerializer;
-import com.netflix.astyanax.serializers.StringSerializer;
 import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import com.netflix.astyanax.connectionpool.exceptions.BadRequestException;
 
@@ -53,7 +51,7 @@ public final class AstyanaxInitializer {
      * @param _server
      * @param _keySpaceName
      * @return KeySpace - the Cassandra KeySpace we are going to work in, and that we give back to the caller
-     * ( if everthing goes well ). 
+     * ( if everything goes well ). 
      * @throws java.lang.Exception 
      */
     public final static Keyspace doInit( final String _clusterName, final String _server, final String _keySpaceName ) throws Exception   {
