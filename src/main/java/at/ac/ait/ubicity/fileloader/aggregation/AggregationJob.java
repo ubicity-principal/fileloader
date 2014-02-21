@@ -1,6 +1,7 @@
 
 package at.ac.ait.ubicity.fileloader.aggregation;
 
+import at.ac.ait.ubicity.fileloader.FileLoader;
 import static at.ac.ait.ubicity.fileloader.FileLoader.TWO;
 import at.ac.ait.ubicity.fileloader.cassandra.AstyanaxInitializer;
 import com.lmax.disruptor.EventHandler;
@@ -17,35 +18,60 @@ import java.util.logging.Logger;
  *
  * @author jan
  */
-public final class AggregationJob {
+public final class AggregationJob implements Runnable    {
     
     
     
-    private Logger logger = Logger.getLogger( this.getClass().getName() );
+    private final static Logger logger = Logger.getLogger( AggregationJob.class.getName() );
     
     
-    public AggregationJob() {
-        
+    private final String host;
+    private final int batchSize;
+    private final Keyspace keySpace;
+    
+    
+    public AggregationJob( final Keyspace _keySpace, final String _host, final int _batchSize )  {
+        keySpace = _keySpace;
+        host = _host;
+        batchSize = _batchSize;
     }
     
     
     
-    public final void run( final String _keySpace, final String _host, final int _batchSize ) throws Exception {
-        Keyspace keySpace = AstyanaxInitializer.doInit( "Test Cluster", _host, _keySpace );
+    public final void doRun( final Keyspace keySpace, final String _host, final int _batchSize ) throws Exception {
+        
+    
         final MutationBatch batch = keySpace.prepareMutationBatch();
         
         logger.setLevel( Level.ALL );
-        logger.info( "got keyspace " + keySpace.getKeyspaceName() + " from Astyanax initializer" );
+        
         
         final ExecutorService exec = Executors.newFixedThreadPool( Runtime.getRuntime().availableProcessors() * 2 );        
-        final Disruptor< AggregateDelta > disruptor = new Disruptor( AggregateDelta.EVENT_FACTORY, ( int ) Math.pow( TWO, 10 ), exec );
         
+        final Disruptor< AggregateDelta > downloadVoldisruptor = new Disruptor( AggregateDelta.EVENT_FACTORY, ( int ) Math.pow( TWO, 10 ), exec );
         final EventHandler< AggregateDelta > downloadVolumehandler = new Aggregator( new DownloadVolume() );
+        downloadVoldisruptor.handleEventsWith( downloadVolumehandler );
+        
+        final Disruptor< AggregateDelta > completedHostsdisruptor = new Disruptor( AggregateDelta.EVENT_FACTORY, ( int ) Math.pow( TWO, 10 ), exec );
+        final EventHandler< AggregateDelta > completedHostsHandler = new Aggregator( new CompletedHosts() );
+        completedHostsdisruptor.handleEventsWith( completedHostsHandler );
+        
+        final Disruptor< AggregateDelta > numNewHostsCrawleddisruptor = new Disruptor( AggregateDelta.EVENT_FACTORY, ( int ) Math.pow( TWO, 10 ), exec );
+        final EventHandler< AggregateDelta > numberOfNewHostsCrawledHandler = new Aggregator( new NumberOfNewHostsCrawled() );
+        numNewHostsCrawleddisruptor.handleEventsWith( numberOfNewHostsCrawledHandler );
+        
+        final Disruptor< AggregateDelta > numURLsCrawleddisruptor = new Disruptor( AggregateDelta.EVENT_FACTORY, ( int ) Math.pow( TWO, 10 ), exec );
         final EventHandler< AggregateDelta > numberOfURLsCrawledHandler = new Aggregator( new NumberOfURLsCrawled() );
-        disruptor.handleEventsWith( downloadVolumehandler, numberOfURLsCrawledHandler );
+        numURLsCrawleddisruptor.handleEventsWith( numberOfURLsCrawledHandler );
         
         
-        final RingBuffer< AggregateDelta > rb = disruptor.start();
+        RingBuffer downloadVolRB = downloadVoldisruptor.start();
+        RingBuffer completedHostsRB = completedHostsdisruptor.start();
+        RingBuffer numNewHostsRB = numNewHostsCrawleddisruptor.start();
+        RingBuffer numURLsCrawledRB = numURLsCrawleddisruptor.start();
+        
+        logger.info( "[AGGREGATOR] started RingBuffers, beginning aggregate job" );
+        
         
         int _lineCount = 0;
         long _start, _lapse;
@@ -59,5 +85,19 @@ public final class AggregationJob {
     
     public final static void main( String... args ) {
         
+    }
+
+    
+    
+    
+    
+    @Override
+    public void run() {
+        try {
+            doRun( keySpace, host, batchSize );
+        }
+        catch( Exception e )    {
+            logger.severe( "[AGGREGATOR] encountered a problem while aggregating : " + e.toString() );
+        }
     }
 }

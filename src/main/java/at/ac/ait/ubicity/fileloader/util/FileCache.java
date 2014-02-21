@@ -95,7 +95,7 @@ public interface FileCache {
         //the last detected / observed line count
         private int lineCount = 0;
 
-        private URI uri; 
+        private final URI uri; 
         
         public final static String fieldSeparator = " :: ";
         

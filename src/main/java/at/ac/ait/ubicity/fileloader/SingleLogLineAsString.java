@@ -29,16 +29,16 @@ import java.lang.ref.WeakReference;
 public final class SingleLogLineAsString {
     
     
-    WeakReference<String> value;
+    String value;
     
     
     public final String getValue()  {
-        return value.get();
+        return value;
     }
     
     
     public final void setValue( String _val )   {
-        value = new WeakReference( _val );
+        value =  _val;
     }
     
     

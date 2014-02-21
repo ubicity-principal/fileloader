@@ -34,7 +34,8 @@ public interface LogLineTokenizer {
     
     public final static String _SEPARATION_TOKEN = " ";
     
+    public final static char SEPARATION_CHAR = ' ';
     
-    public  List< WeakReference<String> > process( SingleLogLineAsString e );
+    public  String[] process( String _line );
     
 }

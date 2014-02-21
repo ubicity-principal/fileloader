@@ -28,9 +28,11 @@ import com.netflix.astyanax.Keyspace;
 import com.netflix.astyanax.MutationBatch;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import java.lang.ref.WeakReference;
+import java.text.BreakIterator;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -67,22 +69,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
      * other purpose than for having its implementation handy here; hence, we might
      * as well use a lambda expression, which saves us some maintenance pain. 
      */
-    final static LogLineTokenizer _tokenizer = new LogLineTokenizer() {
-
-        public List<WeakReference<String>> process(SingleLogLineAsString _event) {
-            final List< WeakReference< String > > _list = new ArrayList();
-            int pos = 0, end;
-            while( ( end = _event.value.get().indexOf( _SEPARATION_TOKEN, pos ) ) >= 0 ) {
-                final String __t = ( _event.value.get().substring( pos, end ) );
-                if( ! __t.startsWith( _SEPARATION_TOKEN, 0 ) ) {
-                    _list.add( new WeakReference( __t ) );
-                }
-                pos = end + 1;
-            }   _list.add( new WeakReference( _event.value.get().substring( pos, _event.value.get().length() ) ) );
-        _list.add( new WeakReference( _event.value.get() ) );
-            return _list;
-        }
-    };        
+    
     
     
     
@@ -99,23 +86,29 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
          * 
          */
         
-        final List< WeakReference< String > > __tokens = _tokenizer.process( event );
-        final int __n = __tokens.size();
+
+        String[] __tokens = new String[ 13 ];
+        int _counter = 0;
+        StringTokenizer _stokenizer = new StringTokenizer( event.value, " " );
+        while( _stokenizer.hasMoreTokens( ) )    {
+            __tokens[ _counter ] = _stokenizer.nextToken();
+            _counter++;
+        }
+        __tokens[ 12 ] = event.value;
         
         LogLineColumn _col = LogLineColumn.ID; 
-        
 
-         for ( int i = 0; i < __n; i++ )   {
-            String __tok = __tokens.get( i ).get();
-            if (  ( _col = _col.next() ) != LogLineColumn.NONE )  {
+        for ( int i = 0; i < 13; i++ )   {
+           String __tok = __tokens[ i ];
+           if (  ( _col = _col.next() ) != LogLineColumn.NONE )  {
                 batch.withRow( CF_LOGLINES, sequence ).putColumn( _col.name, __tok );
-            }
-         }
+           }
+        }
 
         try {
             if( sequence % batchSize == 0 ) {
                 batch.executeAsync().get();
-                System.out.print( " " + sequence );
+                System.out.print( sequence + " " );
             }
         }
         catch( ConnectionException e )  {

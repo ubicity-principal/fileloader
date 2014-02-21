@@ -71,7 +71,7 @@ public final class LogFileCache implements FileCache, Serializable    {
      * make sure the singleton is always there
      */
     static  {
-        logger.setLevel( Level.FINEST );
+        logger.setLevel( Level.ALL );
         singleton = new LogFileCache();
     
     }
@@ -178,6 +178,7 @@ public final class LogFileCache implements FileCache, Serializable    {
             oos = new ObjectOutputStream(fos);
             oos.writeObject(this.cacheMap);
             oos.flush();
+            logger.info( "saved cache files @"  + this.cachePath );
         } 
         catch (final FileNotFoundException e) {
             logger.severe( "cache file creation problem : " + e.toString() );

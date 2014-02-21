@@ -50,7 +50,7 @@ public final class CassandraCrawlLogSchema {
                LongSerializer.get(),   // Key Serializer
                StringSerializer.get());  // Column Serializer
 
-               _keySpace.createColumnFamily( CF_LOGLINES, ImmutableMap.<String, Object>builder()
+               _keySpace.createColumnFamily( cf, ImmutableMap.<String, Object>builder()
                    .put("column_metadata", ImmutableMap.<String, Object>builder()
                            .put("Index1", ImmutableMap.<String, Object>builder()
                                    .put("validation_class", "UTF8Type")
@@ -66,7 +66,7 @@ public final class CassandraCrawlLogSchema {
                         .build());
         }
         catch( BadRequestException bre )    {
-            logger.log( Level.INFO,  "column space " + CF_LOGLINES.getName() + " exists, everything OK, proceeding... " ) ;
+            logger.log( Level.INFO,  "column space " + cf.getName() + " exists, everything OK, proceeding... " ) ;
         }    
         catch( ConnectionException noCassandra )    {
             logger.log( Level.SEVERE, noCassandra.toString() );

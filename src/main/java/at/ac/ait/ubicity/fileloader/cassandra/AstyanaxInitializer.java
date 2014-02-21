@@ -62,14 +62,16 @@ public final class AstyanaxInitializer {
         .forKeyspace( _keySpaceName )
         .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()      
         .setDiscoveryType(NodeDiscoveryType.RING_DESCRIBE )
-        .setCqlVersion("2.0.0")
+        .setCqlVersion("3.0.0")
         .setTargetCassandraVersion("2.0.4")
         
     )
     .withConnectionPoolConfiguration(new ConnectionPoolConfigurationImpl( "ubicity file loading pool")
         .setPort( 9160 )
-        .setMaxConnsPerHost( 8 )
+        .setMaxConnsPerHost( 16 )
         .setSeeds( _server + ":9160" )
+        .setMaxOperationsPerConnection( 10000000 )
+        .setConnectTimeout( 10000 )
     )
     .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
     .buildKeyspace(ThriftFamilyFactory.getInstance());
@@ -77,6 +79,7 @@ public final class AstyanaxInitializer {
     context.start();
 
     Keyspace keySpace = context.getClient();
+    
     try {
         keySpace.describeKeyspace();
         logger.log( Level.INFO, "keyspace " + _keySpaceName + " does exist" );
