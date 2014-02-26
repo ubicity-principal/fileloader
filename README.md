@@ -2,3 +2,6 @@ A backend-loader for Cassandra, to be used by the BL Monitrix project, based upo
 Succinct documentation is coming soon. 
 
  
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/ubicity-principal/fileloader/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
