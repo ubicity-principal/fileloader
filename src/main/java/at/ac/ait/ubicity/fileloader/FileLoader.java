@@ -91,6 +91,9 @@ public final class FileLoader {
             cassandraInitialized = true;
         }
         
+        //get the log id from the file's URI
+        final String log_id = _fileInfo.getURI().toString();
+        
         final MutationBatch batch = keySpace.prepareMutationBatch();
         
         logger.info( "got keyspace " + keySpace.getKeyspaceName() + " from Astyanax initializer" );
@@ -103,9 +106,11 @@ public final class FileLoader {
         SingleLogLineAsStringEventHandler.batch = batch;
         SingleLogLineAsStringEventHandler.keySpace = keySpace;
         SingleLogLineAsStringEventHandler.batchSize = _batchSize;
+        SingleLogLineAsStringEventHandler.LOG_ID = log_id;
         
         //The EventHandler contains the actual logic for ingesting
         final EventHandler< SingleLogLineAsString > handler = new SingleLogLineAsStringEventHandler(  );
+        
         disruptor.handleEventsWith( handler );
         
         //we are almost ready to start

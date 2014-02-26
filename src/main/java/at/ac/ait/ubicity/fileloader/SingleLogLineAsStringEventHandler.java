@@ -60,6 +60,8 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
     
     static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
 
+    static String LOG_ID;
+    
     /**
      * No-arg constructor, necessary by contract with LMAX Disruptor 
      */
@@ -103,7 +105,9 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
         __tokens[ 14 ] = Long.toString( dateFormat.parse( __tokens[ 0 ] ).getTime() );
         
         LogLineColumn _col = LogLineColumn.ID; 
-
+        batch.withRow( log, Long.toString( sequence ) ).putColumn( _col.name, LOG_ID );
+        
+        
         for ( int i = 0; i < 15; i++ )   {
            String __tok = __tokens[ i ];
            if (  ( _col = _col.next() ) != LogLineColumn.NONE )  {
