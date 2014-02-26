@@ -43,6 +43,7 @@ public final class AstyanaxInitializer {
 
     public static ColumnFamily< String, String > log;
     
+    
     final static Logger logger = Logger.getLogger( "AstyanaxInitializer" );
     
     /**
