@@ -167,7 +167,8 @@ public final class FileLoader {
         
         
         //now go to aggregation step
-        SortedSet< Long > timeStamps = new TreeSet();
+        SortedSet< Long > timeStamps = new TreeSet( tsSorter.timeStamps );
+        
         long _minTs = timeStamps.first();
         long _maxTs = timeStamps.last();
         logger.info( "**** min TimeStamp = " + _minTs );
