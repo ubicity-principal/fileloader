@@ -87,7 +87,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
          */
         
         
-        String[] __tokens = new String[ 13 ];
+        String[] __tokens = new String[ 14 ];
         int _counter = 0;
         StringTokenizer _stokenizer = new StringTokenizer( event.value, " " );
         while( _stokenizer.hasMoreTokens( ) )    {
@@ -95,15 +95,17 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
             _counter++;
         }
         __tokens[ 12 ] = event.value;
+        __tokens[ 13 ] = __tokens[ 1 ];
         
         LogLineColumn _col = LogLineColumn.ID; 
 
-        for ( int i = 0; i < 13; i++ )   {
+        for ( int i = 0; i < 14; i++ )   {
            String __tok = __tokens[ i ];
            if (  ( _col = _col.next() ) != LogLineColumn.NONE )  {
                 batch.withRow( log, Long.toString( sequence ) ).putColumn( _col.name, __tok );
            }
         }
+        
 
         try {
             if( sequence % batchSize == 0 ) {
