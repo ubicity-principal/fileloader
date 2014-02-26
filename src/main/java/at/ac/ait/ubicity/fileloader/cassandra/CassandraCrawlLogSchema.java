@@ -41,13 +41,13 @@ import java.util.logging.Level;
 public final class CassandraCrawlLogSchema {
     
     
-    public final static ColumnFamily< Long, String > checkOrBuildMonitrixSchema( final Keyspace _keySpace)   {
-        ColumnFamily< Long, String > cf = null;
+    public final static ColumnFamily< String, String > checkOrBuildMonitrixSchema( final Keyspace _keySpace)   {
+        ColumnFamily< String, String > cf = null;
         
             try {
                cf = ColumnFamily.newColumnFamily(
                "log",              // Column Family Name
-               LongSerializer.get(),   // Key Serializer
+               StringSerializer.get(),   // Key Serializer
                StringSerializer.get());  // Column Serializer
 
                _keySpace.createColumnFamily( cf, ImmutableMap.<String, Object>builder()

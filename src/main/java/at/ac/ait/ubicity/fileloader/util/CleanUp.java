@@ -22,7 +22,7 @@ public class CleanUp {
 
         Rows< Long, String > rows = null;
         Keyspace keySpace = AstyanaxInitializer.doInit( "Test Cluster", "localhost", "crawl_uris" );
-        ColumnFamily< Long, String > cf = null;
+        ColumnFamily< String, String > cf = null;
         
         
         try {

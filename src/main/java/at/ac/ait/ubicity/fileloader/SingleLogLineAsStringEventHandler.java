@@ -101,7 +101,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
         for ( int i = 0; i < 13; i++ )   {
            String __tok = __tokens[ i ];
            if (  ( _col = _col.next() ) != LogLineColumn.NONE )  {
-                batch.withRow( log, sequence ).putColumn( _col.name, __tok );
+                batch.withRow( log, Long.toString( sequence ) ).putColumn( _col.name, __tok );
            }
         }
 

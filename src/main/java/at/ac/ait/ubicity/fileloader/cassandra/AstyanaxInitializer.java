@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 public final class AstyanaxInitializer {
 
 
-    public static ColumnFamily< Long, String > log;
+    public static ColumnFamily< String, String > log;
     
     final static Logger logger = Logger.getLogger( "AstyanaxInitializer" );
     

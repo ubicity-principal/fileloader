@@ -31,9 +31,9 @@ public final class CheckDB {
         Logger logger = Logger.getLogger( CheckDB.class.getName() );
         logger.setLevel(Level.ALL);
 
-        Rows< Long, String > rows = null;
+        Rows< String, String > rows = null;
         Keyspace keySpace = AstyanaxInitializer.doInit( "Test Cluster", "localhost", "crawl_uris" );
-        ColumnFamily< Long, String > cf = null;
+        ColumnFamily< String, String > cf = null;
         
         
         try {
