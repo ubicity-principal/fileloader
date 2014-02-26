@@ -29,7 +29,7 @@ import com.netflix.astyanax.MutationBatch;
 import com.netflix.astyanax.connectionpool.exceptions.ConnectionException;
 import com.netflix.astyanax.connectionpool.exceptions.OperationTimeoutException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+
 
 import java.util.StringTokenizer;
 import java.util.concurrent.ExecutionException;
@@ -58,7 +58,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
     
     static long _waitOnTimeOut = 500;
     
-    static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSSZ" );
+    static final SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'" );
 
     /**
      * No-arg constructor, necessary by contract with LMAX Disruptor 
