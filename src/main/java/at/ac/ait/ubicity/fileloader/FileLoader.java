@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -91,6 +93,11 @@ public final class FileLoader {
             cassandraInitialized = true;
         }
         
+        LongTimeStampSorter tsSorter = new LongTimeStampSorter();
+        Thread tTSSorter = new Thread( tsSorter );
+        tTSSorter.setPriority( Thread.MAX_PRIORITY - 1 );
+        tTSSorter.setName( "long timestamp sorter " );
+        tTSSorter.start();
         //get the log id from the file's URI
         final String log_id = _fileInfo.getURI().toString();
         
@@ -107,6 +114,7 @@ public final class FileLoader {
         SingleLogLineAsStringEventHandler.keySpace = keySpace;
         SingleLogLineAsStringEventHandler.batchSize = _batchSize;
         SingleLogLineAsStringEventHandler.LOG_ID = log_id;
+        SingleLogLineAsStringEventHandler.tsSorter = tsSorter;
         
         //The EventHandler contains the actual logic for ingesting
         final EventHandler< SingleLogLineAsString > handler = new SingleLogLineAsStringEventHandler(  );
@@ -144,6 +152,7 @@ public final class FileLoader {
         //stop, waiting for last threads still busy to finish their work
         disruptor.shutdown();
 
+        
 
         //update the file info, this will  land in the cache
         _fileInfo.setLineCount( _lineCount );
@@ -155,6 +164,16 @@ public final class FileLoader {
         onLines.close();
         
         logger.info( "handled " + ( _lineCount - _linesAlreadyProcessed )  + " log lines in " + _lapse + " nanoseconds" );
+        
+        
+        //now go to aggregation step
+        SortedSet< Long > timeStamps = new TreeSet();
+        long _minTs = timeStamps.first();
+        long _maxTs = timeStamps.last();
+        logger.info( "**** min TimeStamp = " + _minTs );
+        logger.info( "**** max TimeStamp = " + _maxTs );
+        
+        
         
 //        AggregationJob aggJob = new AggregationJob( keySpace, _host, _batchSize );
 //        Thread tAgg = new Thread( aggJob );

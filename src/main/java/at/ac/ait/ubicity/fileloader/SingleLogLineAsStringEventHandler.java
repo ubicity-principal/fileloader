@@ -62,6 +62,8 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
 
     static String LOG_ID;
     
+    static LongTimeStampSorter tsSorter;
+    
     /**
      * No-arg constructor, necessary by contract with LMAX Disruptor 
      */
@@ -102,7 +104,9 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
         }
         __tokens[ 12 ] = event.value;
         __tokens[ 13 ] = __tokens[ 0 ];
-        __tokens[ 14 ] = Long.toString( dateFormat.parse( __tokens[ 0 ] ).getTime() );
+        long _longTimeStamp = dateFormat.parse( __tokens[ 0 ] ).getTime() ;
+        __tokens[ 14 ] = Long.toString(  _longTimeStamp );
+        tsSorter.timeStamps.add( _longTimeStamp );
         
 
         
