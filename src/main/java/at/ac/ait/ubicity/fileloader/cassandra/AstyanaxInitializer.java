@@ -80,10 +80,10 @@ public final class AstyanaxInitializer {
     
     try {
         keySpace.describeKeyspace();
-        logger.log( Level.INFO, "keyspace " + _keySpaceName + " does exist" );
+        logger.log( Level.INFO, "keyspace " + keySpace.getKeyspaceName() + " does exist" );
     }
     catch( BadRequestException bre )    {
-        logger.log( Level.INFO, "keyspace " + _keySpaceName + " does NOT exist, creating it" );
+        logger.log( Level.INFO, "keyspace " + keySpace.getKeyspaceName() + " does NOT exist, creating it" );
         keySpace.createKeyspace( ImmutableMap.<String, Object>builder()
         .put("strategy_options", ImmutableMap.<String, Object>builder()
         .put("replication_factor", "1")
