@@ -28,8 +28,9 @@ public enum LogLineColumn  {
     DOWNLOAD_SIZE( 3, "downloaded_bytes" ), URL( 4, "uri" ), DISCOVERY_PATH( 5, "discovery_path" ), REFERER( 6, "referer" ), 
     CONTENT_TYPE( 7, "content_type" ), WORKER_THREAD( 8, "worker_thread" ), LOG_DATE( 9, "fetch_ts" ), 
     HASH( 10, "hash" ), ANNOTATIONS( 11, "annotations" ), IP_ADDRESS( 12, "ip_address" ), LINE( 13, "line" ), COARSE_TS( 14, "coarse_ts" ),
+    LONG_LOG_TS( 15, "long_log_ts" ),
     //placeholder for "no physical column:
-    NONE( 13, "none" );
+    NONE( 16, "none" );
     
     
     protected int order;
