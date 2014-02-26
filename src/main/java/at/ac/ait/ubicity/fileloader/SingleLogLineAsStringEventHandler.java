@@ -100,7 +100,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
         }
         __tokens[ 12 ] = event.value;
         __tokens[ 13 ] = __tokens[ 0 ];
-        __tokens[ 14 ] = Long.toString( dateFormat.parse( __tokens[ 14 ] ).getTime() );
+        __tokens[ 14 ] = Long.toString( dateFormat.parse( __tokens[ 0 ] ).getTime() );
         
         LogLineColumn _col = LogLineColumn.ID; 
 
