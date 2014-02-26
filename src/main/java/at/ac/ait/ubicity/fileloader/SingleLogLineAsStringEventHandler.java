@@ -104,14 +104,16 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
         __tokens[ 13 ] = __tokens[ 0 ];
         __tokens[ 14 ] = Long.toString( dateFormat.parse( __tokens[ 0 ] ).getTime() );
         
-        LogLineColumn _col = LogLineColumn.ID; 
-        batch.withRow( log, Long.toString( sequence ) ).putColumn( _col.name, LOG_ID );
+
+        
+        LogLineColumn _col = LogLineColumn.ID;
+        batch.withRow( log, __tokens[ 0] ).putColumn( _col.name, LOG_ID );
         
         
         for ( int i = 0; i < 15; i++ )   {
            String __tok = __tokens[ i ];
            if (  ( _col = _col.next() ) != LogLineColumn.NONE )  {
-                batch.withRow( log, Long.toString( sequence ) ).putColumn( _col.name, __tok );
+                batch.withRow( log, __tokens[ 0 ] ).putColumn( _col.name, __tok );
            }
         }
         
