@@ -95,7 +95,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
             _counter++;
         }
         __tokens[ 12 ] = event.value;
-        __tokens[ 13 ] = __tokens[ 1 ];
+        __tokens[ 13 ] = __tokens[ 0 ];
         
         LogLineColumn _col = LogLineColumn.ID; 
 
