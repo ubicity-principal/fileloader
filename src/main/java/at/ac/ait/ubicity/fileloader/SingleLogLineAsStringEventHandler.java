@@ -19,7 +19,7 @@ package at.ac.ait.ubicity.fileloader;
  */
 
 
-import static at.ac.ait.ubicity.fileloader.cassandra.AstyanaxInitializer.CF_LOGLINES;
+import static at.ac.ait.ubicity.fileloader.cassandra.AstyanaxInitializer.log;
 import at.ac.ait.ubicity.fileloader.cassandra.LogLineColumn;
 
 import com.lmax.disruptor.EventHandler;
@@ -101,7 +101,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
         for ( int i = 0; i < 13; i++ )   {
            String __tok = __tokens[ i ];
            if (  ( _col = _col.next() ) != LogLineColumn.NONE )  {
-                batch.withRow( CF_LOGLINES, sequence ).putColumn( _col.name, __tok );
+                batch.withRow( log, sequence ).putColumn( _col.name, __tok );
            }
         }
 

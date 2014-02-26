@@ -46,7 +46,7 @@ public final class CassandraCrawlLogSchema {
         
             try {
                cf = ColumnFamily.newColumnFamily(
-               "CF_LOGLINES",              // Column Family Name
+               "log",              // Column Family Name
                LongSerializer.get(),   // Key Serializer
                StringSerializer.get());  // Column Serializer
 

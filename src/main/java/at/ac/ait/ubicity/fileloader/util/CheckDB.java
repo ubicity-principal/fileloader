@@ -32,13 +32,13 @@ public final class CheckDB {
         logger.setLevel(Level.ALL);
 
         Rows< Long, String > rows = null;
-        Keyspace keySpace = AstyanaxInitializer.doInit( "Test Cluster", "localhost", "CF_LOGLINES" );
+        Keyspace keySpace = AstyanaxInitializer.doInit( "Test Cluster", "localhost", "crawl_uris" );
         ColumnFamily< Long, String > cf = null;
         
         
         try {
             
-               cf = AstyanaxInitializer.CF_LOGLINES;
+               cf = AstyanaxInitializer.log;
                
             rows = keySpace.prepareQuery( cf ).getAllRows().setBlockSize( 10 ).withColumnRange( new RangeBuilder().setMaxSize( 10).build() )
                     .setExceptionCallback( new ExceptionCallback()  {

@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 public final class AstyanaxInitializer {
 
 
-    public static ColumnFamily< Long, String > CF_LOGLINES;
+    public static ColumnFamily< Long, String > log;
     
     final static Logger logger = Logger.getLogger( "AstyanaxInitializer" );
     
@@ -94,9 +94,9 @@ public final class AstyanaxInitializer {
     }
 
         
-    CF_LOGLINES = CassandraCrawlLogSchema.checkOrBuildMonitrixSchema( keySpace );
+    log = CassandraCrawlLogSchema.checkOrBuildMonitrixSchema( keySpace );
 
-    if( CF_LOGLINES == null )   {
+    if( log == null )   {
         logger.log( Level.SEVERE, "could not create Monitrix ColumnFamily ( table ) " );
     }
     return keySpace;

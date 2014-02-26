@@ -21,13 +21,13 @@ public class CleanUp {
         logger.setLevel(Level.ALL);
 
         Rows< Long, String > rows = null;
-        Keyspace keySpace = AstyanaxInitializer.doInit( "Test Cluster", "localhost", "CF_LOGLINES" );
+        Keyspace keySpace = AstyanaxInitializer.doInit( "Test Cluster", "localhost", "crawl_uris" );
         ColumnFamily< Long, String > cf = null;
         
         
         try {
             
-               cf = AstyanaxInitializer.CF_LOGLINES;
+               cf = AstyanaxInitializer.log;
                keySpace.truncateColumnFamily( cf );
         }
         catch( Throwable t )    {
