@@ -24,10 +24,10 @@ package at.ac.ait.ubicity.fileloader.cassandra;
 
 public enum LogLineColumn  {
     
-    ID( 0, "log_id" ), TIMESTAMP( 1, "log_ts" ), HTTP_CODE( 2, "status_code" ),
-    DOWNLOAD_SIZE( 3, "downloaded_bytes" ), URL( 4, "uri" ), LLL( 5, "lll" ), REFERRER( 6, "referrer" ), 
-    S_MIMETYPE( 7, "content_type" ), THREAD_NR( 8, "worker_thread" ), LOG_DATE( 9, "fetch_ts" ), 
-    SHA_SIG( 10, "hash" ), CODE_2( 11, "code_2" ), IP_ADDRESS( 12, "ip_address" ), LOG_LINE( 13, "line" ),
+      ID( 0, "log_id" ), TIMESTAMP( 1, "log_ts" ), HTTP_CODE( 2, "status_code" ),
+    DOWNLOAD_SIZE( 3, "downloaded_bytes" ), URL( 4, "uri" ), DISCOVERY_PATH( 5, "discovery_path" ), REFERER( 6, "referer" ), 
+    CONTENT_TYPE( 7, "content_type" ), WORKER_THREAD( 8, "worker_thread" ), LOG_DATE( 9, "fetch_ts" ), 
+    HASH( 10, "hash" ), ANNOTATIONS( 11, "annotations" ), IP_ADDRESS( 12, "ip_address" ), LINE( 13, "line" ),
     //placeholder for "no physical column:
     NONE( 13, "none" );
     
