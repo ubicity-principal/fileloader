@@ -114,6 +114,8 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
         catch( ExecutionException | OperationTimeoutException  opTimedOut )  {
             try {
                 logger.warning( "backing off for " + _waitOnTimeOut + " millis before retrying" );
+                logger.warning( "here comes the stack trace:\n" );
+                opTimedOut.printStackTrace();
                 Thread.sleep( _waitOnTimeOut );
                 //exponential back-off
                 _waitOnTimeOut = 2 * _waitOnTimeOut;
