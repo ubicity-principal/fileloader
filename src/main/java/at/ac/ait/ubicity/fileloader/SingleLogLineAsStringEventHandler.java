@@ -107,6 +107,7 @@ final class SingleLogLineAsStringEventHandler implements EventHandler<SingleLogL
         long _longTimeStamp = dateFormat.parse( __tokens[ 0 ] ).getTime() ;
         __tokens[ 14 ] = Long.toString(  _longTimeStamp );
         tsSorter.timeStamps.add( _longTimeStamp );
+        System.out.println( "-------------> > > adding timestamp " + _longTimeStamp );
         
 
         
